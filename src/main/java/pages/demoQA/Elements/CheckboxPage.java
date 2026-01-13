@@ -4,10 +4,7 @@ import core.Basepage;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.WebDriverWait;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -17,6 +14,7 @@ import static util.Constants.TREE_POLLING_INTERVAL;
 import static util.Constants.TREE_STABILIZATION_TIMEOUT;
 
 public class CheckboxPage extends Basepage {
+
 
     // ================= SELECTORS =================
 
@@ -191,8 +189,9 @@ public class CheckboxPage extends Basepage {
         for (int i = 0; i < path.length; i++) {
             String segment = path[i];
             walked.add(segment);
+            logger.info("Node {} is {}", i, segment);
             logger.debug("Resolving segment '{}' under context {}", segment, String.join(" > ", walked));
-
+            waitForChildrenReady(context);
             Optional<WebElement> child = findChildNode(context, segment);
             if (child.isEmpty()) {
                 logger.warn("Segment '{}' NOT found under {}", segment, String.join(" > ", walked));
@@ -204,6 +203,7 @@ public class CheckboxPage extends Basepage {
                 expandIfNeeded(child.get());
             }
             context = child.get();
+
         }
         return Optional.of(context);
     }
