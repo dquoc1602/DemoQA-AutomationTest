@@ -117,6 +117,14 @@ public class Basepage extends Helper {
         findElement(selector).sendKeys(text);
     }
 
+    protected void replaceText(By selector, String text) {
+        logger.info("Replacing text '{}' in element {}", text, selector);
+        WebElement element = findElement(selector);
+        element.clear();
+        element.sendKeys(text);
+        logger.info("Text replaced successfully");
+    }
+
     protected String getValueAfterColon(By selector) {
         String rawText = getElementText(selector);
         logger.info("Raw output text: {}", rawText);
