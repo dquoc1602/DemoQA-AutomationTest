@@ -7,7 +7,9 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import util.Helper;
 
 import java.time.Duration;
+import java.util.List;
 import java.util.Set;
+import java.util.function.BooleanSupplier;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -35,6 +37,30 @@ public class Basepage extends Helper {
         return getWait(TestSettings.WAIT_ELEMENT).until(ExpectedConditions.visibilityOfElementLocated(selector));
     }
 
+    /**
+     * Finds all elements matching selector.
+     * Returns empty list if none found (NO exception).
+     * Used for tree traversal, radio groups, dynamic lists.
+     */
+    protected List<WebElement> findElements(By selector) {
+        logger.debug("Finding elements by selector: {}", selector);
+        try {
+            List<WebElement> elements = driver.findElements(selector);
+            logger.debug("Found {} elements for selector {}", elements.size(), selector);
+            return elements;
+        } catch (Exception e) {
+            logger.error("Error while finding elements by selector {}", selector, e);
+            return List.of();
+        }
+    }
+
+    public WebElement findElementPresent(By selector) {
+        logger.debug("Finding element by presence: {}", selector);
+        return getWait(TestSettings.WAIT_ELEMENT)
+                .until(ExpectedConditions.presenceOfElementLocated(selector));
+    }
+
+
     public WebDriverWait getWait(long waitTime) {
         return new WebDriverWait(this.driver, Duration.ofSeconds(waitTime));
     }
@@ -46,6 +72,45 @@ public class Basepage extends Helper {
     private WebElement waitForElementClickable(By selector) {
         return getWait(TestSettings.WAIT_ELEMENT).until(ExpectedConditions.elementToBeClickable(selector));
     }
+
+    /**
+     * Generic wait for custom condition.
+     * Used for state-based waiting (checked, expanded, text changed, etc.)
+     */
+    protected void waitForCondition(BooleanSupplier condition) {
+        waitForCondition(condition, TestSettings.WAIT_ELEMENT);
+    }
+
+    protected void waitForCondition(BooleanSupplier condition, long timeoutSeconds) {
+        logger.debug("Waiting for custom condition (timeout: {}s)", timeoutSeconds);
+        try {
+            new WebDriverWait(driver, Duration.ofSeconds(timeoutSeconds))
+                    .until(d -> {
+                        try {
+                            return condition.getAsBoolean();
+                        } catch (Exception e) {
+                            logger.trace("Condition evaluation failed, retrying...", e);
+                            return false;
+                        }
+                    });
+            logger.debug("Condition satisfied");
+        } catch (TimeoutException e) {
+            logger.error("Timeout waiting for custom condition");
+            throw e;
+        }
+    }
+
+    protected void waitForTextEquals(WebElement element, String expected) {
+        waitForCondition(() -> expected.equals(element.getText().trim()));
+    }
+
+    protected void waitForClassContains(WebElement element, String className) {
+        waitForCondition(() -> {
+            String clazz = element.getDomAttribute("class");
+            return clazz != null && clazz.contains(className);
+        });
+    }
+
 
     protected void enterText(By selector, String text){
         logger.info("Entering text {}", text);
