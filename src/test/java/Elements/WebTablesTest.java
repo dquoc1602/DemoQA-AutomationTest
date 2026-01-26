@@ -1,156 +1,124 @@
 package Elements;
 
 import core.BaseTest;
+import models.WebTableRecord;
 import org.junit.jupiter.api.*;
 import pages.demoQA.Elements.WebTablesPage;
-import pages.demoQA.Elements.WebTablesPage.WebTableRecord;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-/**
- * Lead / Principal-ready UI Test Suite for Web Tables
- *
- * Design goals:
- * - Business-readable scenarios
- * - Deterministic assertions
- * - No UI-structure coupling
- * - Full CRUD coverage
- * - Search & pagination safe
- */
 @DisplayName("Web Tables Test")
 @TestMethodOrder(MethodOrderer.DisplayName.class)
 public class WebTablesTest extends BaseTest {
 
-    private WebTablesPage table;
+        private WebTablesPage table;
 
-    // ===================== TEST DATA =====================
+        private static final WebTableRecord NEW_RECORD = new WebTableRecord(
+                        "John",
+                        "Doe",
+                        "30",
+                        "john.doe@test.com",
+                        "5000",
+                        "Engineering");
 
-    private static final WebTableRecord NEW_RECORD =
-            new WebTableRecord(
-                    "John",
-                    "Doe",
-                    "30",
-                    "john.doe@test.com",
-                    "5000",
-                    "Engineering"
-            );
+        private static final WebTableRecord UPDATED_RECORD = new WebTableRecord(
+                        "John",
+                        "Doe",
+                        "31",
+                        "john.doe@test.com",
+                        "6000",
+                        "Platform");
 
-    private static final WebTableRecord UPDATED_RECORD =
-            new WebTableRecord(
-                    "John",
-                    "Doe",
-                    "31",
-                    "john.doe@test.com",
-                    "6000",
-                    "Platform"
-            );
+        @BeforeEach
+        void setup() {
+                table = new WebTablesPage();
+        }
 
-    // ===================== SETUP =====================
+        @Test
+        @DisplayName("01 – Default records should be present")
+        void shouldLoadDefaultRecords() {
+                assertFalse(table.getAllRecords().isEmpty(),
+                                "Expected default records to be present");
+        }
 
-    @BeforeEach
-    void setup() {
-        table = new WebTablesPage();
-    }
+        @Test
+        @DisplayName("02 – Add new record")
+        void shouldAddNewRecord() {
+                table.addRecord(NEW_RECORD);
+                assertTrue(table.recordExists(NEW_RECORD), "Record should exist after add");
+        }
 
-    // ===================== READ =====================
+        @Test
+        @DisplayName("03 – Search by email")
+        void shouldSearchByEmail() {
+                table.addRecord(NEW_RECORD);
+                table.search(NEW_RECORD.email);
 
-    @Test
-    @DisplayName("01 – Default records should be present")
-    void shouldLoadDefaultRecords() {
-        assertFalse(table.getAllRecords().isEmpty(),
-                "Expected default records to be present");
-    }
+                assertTrue(table.recordExists(NEW_RECORD), "Record should exist in search results");
 
-    // ===================== ADD =====================
+                table.clearSearch();
+        }
 
-    @Test
-    @DisplayName("02 – Add new record")
-    void shouldAddNewRecord() {
-        table.addRecord(NEW_RECORD)
-                .verifyRecordExists(NEW_RECORD);
-    }
+        @Test
+        @DisplayName("04 – Edit existing record")
+        void shouldEditExistingRecord() {
+                table.addRecord(NEW_RECORD);
+                table.editRecordByEmail(NEW_RECORD.email, UPDATED_RECORD);
 
-    // ===================== SEARCH =====================
+                assertTrue(table.recordExists(UPDATED_RECORD), "Updated record should exist");
+                assertFalse(table.recordExistsByEmail(NEW_RECORD.email), "Old record email should not exist");
+        }
 
-    @Test
-    @DisplayName("03 – Search by email")
-    void shouldSearchByEmail() {
-        table.addRecord(NEW_RECORD)
-                .search(NEW_RECORD.email)
-                .verifyRecordExists(NEW_RECORD)
-                .clearSearch();
-    }
+        @Test
+        @DisplayName("05 – Delete record")
+        void shouldDeleteRecord() {
+                table.addRecord(NEW_RECORD);
+                table.deleteRecordByEmailSafe(NEW_RECORD.email);
 
-    // ===================== EDIT =====================
+                assertFalse(table.recordExistsByEmail(NEW_RECORD.email), "Record should be deleted");
+        }
 
-    @Test
-    @DisplayName("04 – Edit existing record")
-    void shouldEditExistingRecord() {
-        table.addRecord(NEW_RECORD)
-                .editRecordByEmail(NEW_RECORD.email, UPDATED_RECORD)
-                .verifyRecordExists(UPDATED_RECORD);
-    }
+        @Test
+        void shouldChangeRowsPerPage() {
+                table.setRowsPerPage("5");
+                int visibleDataRows = table.getVisibleDataRowCount();
 
-    // ===================== DELETE =====================
+                assertTrue(visibleDataRows <= 5,
+                                "Expected visible records <= page size");
+        }
 
-    @Test
-    @DisplayName("05 – Delete record")
-    void shouldDeleteRecord() {
-        table.addRecord(NEW_RECORD)
-                .deleteRecordByEmailSafe(NEW_RECORD.email)
-                .verifyRecordNotExists(NEW_RECORD.email);
-    }
+        @Test
+        @DisplayName("07 – Email uniquely identifies record")
+        void emailShouldUniquelyIdentifyRecord() {
+                table.addRecord(NEW_RECORD);
+                assertTrue(table.findRecordByEmail(NEW_RECORD.email).isPresent(),
+                                "Expected record to be found by email");
+        }
 
-    // ===================== PAGINATION =====================
+        @Test
+        @DisplayName("08 – Delete non-existing record fails deterministically")
+        void shouldFailDeletingNonExistingRecord() {
+                IllegalStateException ex = assertThrows(
+                                IllegalStateException.class,
+                                () -> table.deleteRecordByEmailSafe("notfound@test.com"));
+                assertTrue(ex.getMessage().contains("Record not found"),
+                                "Exception message mismatch");
+        }
 
-    @Test
-    void shouldChangeRowsPerPage() {
-        table.setRowsPerPage("5");
+        @Test
+        @DisplayName("09 – Full CRUD workflow")
+        void shouldHandleFullWorkflow() {
+                table.addRecord(NEW_RECORD);
+                assertTrue(table.recordExists(NEW_RECORD));
 
-        int visibleDataRows = table.getVisibleDataRowCount();
+                table.editRecordByEmail(NEW_RECORD.email, UPDATED_RECORD);
+                assertTrue(table.recordExists(UPDATED_RECORD));
 
-        assertTrue(visibleDataRows <= 5,
-                "Expected visible records <= page size");
-    }
+                table.search(UPDATED_RECORD.department);
+                assertTrue(table.recordExists(UPDATED_RECORD));
 
-
-    // ===================== IDENTITY =====================
-
-    @Test
-    @DisplayName("07 – Email uniquely identifies record")
-    void emailShouldUniquelyIdentifyRecord() {
-        table.addRecord(NEW_RECORD);
-        assertTrue(
-                table.findRecordByEmail(NEW_RECORD.email).isPresent(),
-                "Expected record to be found by email"
-        );
-    }
-
-    // ===================== NEGATIVE =====================
-
-    @Test
-    @DisplayName("08 – Delete non-existing record fails deterministically")
-    void shouldFailDeletingNonExistingRecord() {
-        IllegalStateException ex = assertThrows(
-                IllegalStateException.class,
-                () -> table.deleteRecordByEmailSafe("notfound@test.com")
-        );
-        assertTrue(ex.getMessage().contains("Record with email 'notfound@test.com' found: false"));
-    }
-
-    // ===================== END-TO-END =====================
-
-    @Test
-    @DisplayName("09 – Full CRUD workflow")
-    void shouldHandleFullWorkflow() {
-        table.addRecord(NEW_RECORD)
-                .verifyRecordExists(NEW_RECORD)
-                .editRecordByEmail(NEW_RECORD.email, UPDATED_RECORD)
-                .verifyRecordExists(UPDATED_RECORD)
-                .search(UPDATED_RECORD.department)
-                .verifyRecordExists(UPDATED_RECORD)
-                .clearSearch()
-                .deleteRecordByEmailSafe(UPDATED_RECORD.email)
-                .verifyRecordNotExists(UPDATED_RECORD.email);
-    }
+                table.clearSearch();
+                table.deleteRecordByEmailSafe(UPDATED_RECORD.email);
+                assertFalse(table.recordExistsByEmail(UPDATED_RECORD.email));
+        }
 }

@@ -6,122 +6,102 @@ import pages.demoQA.Elements.RadioButtonPage;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-/**
- * Lead / Principal-ready UI Test Suite for Radio Button Page
- *
- * Design goals:
- * - Business-readable tests
- * - Deterministic behavior
- * - Result-text as source of truth
- * - Explicit disabled handling
- * - Zero duplication
- */
 @DisplayName("Radio Button Test")
 @TestMethodOrder(MethodOrderer.DisplayName.class)
 public class RadioButtonTest extends BaseTest {
 
     private RadioButtonPage radio;
 
-    // ===================== TEST DATA =====================
-
     private static final String YES = "Yes";
     private static final String IMPRESSIVE = "Impressive";
     private static final String NO = "No";
-
-    // ===================== SETUP =====================
 
     @BeforeEach
     void setup() {
         radio = new RadioButtonPage();
     }
 
-    // ===================== BASIC BEHAVIOR =====================
-
     @Test
     @DisplayName("01 – Select Yes radio")
     void shouldSelectYes() {
-        radio.selectYes()
-                .verifySelected(YES);
+        radio.selectYes();
+        assertTrue(radio.isSelected(YES), "Expected YES to be selected");
+        assertEquals(YES, radio.getResultText(), "Result text mismatch");
     }
 
     @Test
     @DisplayName("02 – Select Impressive radio")
     void shouldSelectImpressive() {
-        radio.selectImpressive()
-                .verifySelected(IMPRESSIVE);
+        radio.selectImpressive();
+        assertTrue(radio.isSelected(IMPRESSIVE), "Expected IMPRESSIVE to be selected");
     }
-
-    // ===================== IDENTITY & IDP =====================
 
     @Test
     @DisplayName("03 – Selecting same radio is idempotent")
     void shouldBeIdempotent() {
         radio.selectYes()
-                .selectYes()
-                .verifySelected(YES);
+                .selectYes();
+        assertTrue(radio.isSelected(YES));
     }
-
-    // ===================== MUTUAL EXCLUSION =====================
 
     @Test
     @DisplayName("04 – Selecting another radio unselects previous")
     void shouldUnselectPreviousWhenNewSelected() {
         radio.selectYes()
-                .selectImpressive()
-                .verifySelected(IMPRESSIVE)
-                .verifyNotSelected(YES);
-    }
+                .selectImpressive();
 
-    // ===================== DISABLED BEHAVIOR =====================
+        assertTrue(radio.isSelected(IMPRESSIVE), "Impressive should be selected");
+        assertFalse(radio.isSelected(YES), "Yes should NOT be selected");
+    }
 
     @Test
     @DisplayName("05 – Disabled radio cannot be selected")
     void shouldNotSelectDisabledRadio() {
-        radio.selectYes()
-                .attemptSelectNoAndVerifyUnchanged(YES)
-                .verifyDisabled(NO);
-    }
+        radio.selectYes();
+        radio.attemptSelectNo(YES);
 
-    // ===================== STATE VERIFICATION =====================
+        assertTrue(radio.isDisabled(NO), "Expected NO to be disabled");
+        assertTrue(radio.isSelected(YES), "Expected YES to remain selected");
+        assertEquals(YES, radio.getResultText(), "Result text should still be YES");
+    }
 
     @Test
     @DisplayName("06 – Only one radio can be selected")
     void shouldAllowOnlyOneSelection() {
-        radio.selectYes()
-                .verifyExactlyOneSelected()
-                .selectImpressive()
-                .verifyExactlyOneSelected();
+        radio.selectYes();
+        assertEquals(1, radio.getSelectedCount(), "Expected exactly 1 selected");
+
+        radio.selectImpressive();
+        assertEquals(1, radio.getSelectedCount(), "Expected exactly 1 selected");
     }
 
     @Test
     @DisplayName("07 – No selection initially")
     void shouldHaveNoInitialSelection() {
-        radio.verifyNoSelection();
+        assertEquals(0, radio.getSelectedCount(), "Expected NO selection initially");
     }
-
-    // ===================== NEGATIVE =====================
 
     @Test
     @DisplayName("08 – Invalid label fails deterministically")
     void shouldFailOnInvalidLabel() {
         IllegalArgumentException ex = assertThrows(
                 IllegalArgumentException.class,
-                () -> radio.selectByLabel("INVALID")
-        );
+                () -> radio.selectByLabel("INVALID"));
         assertTrue(ex.getMessage().contains("Unknown radio label"));
     }
-
-    // ===================== END-TO-END =====================
 
     @Test
     @DisplayName("09 – Full realistic workflow")
     void shouldHandleFullWorkflow() {
-        radio.verifyNoSelection()
-                .selectYes()
-                .verifySelected(YES)
-                .selectImpressive()
-                .verifySelected(IMPRESSIVE)
-                .attemptSelectNoAndVerifyUnchanged(IMPRESSIVE)
-                .verifySelected(IMPRESSIVE);
+        assertEquals(0, radio.getSelectedCount());
+
+        radio.selectYes();
+        assertTrue(radio.isSelected(YES));
+
+        radio.selectImpressive();
+        assertTrue(radio.isSelected(IMPRESSIVE));
+
+        radio.attemptSelectNo(IMPRESSIVE);
+        assertTrue(radio.isSelected(IMPRESSIVE));
     }
 }

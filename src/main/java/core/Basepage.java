@@ -11,8 +11,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.BooleanSupplier;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 public class Basepage extends Helper {
     private String crrWindow;
     protected WebDriver driver;
@@ -27,13 +25,13 @@ public class Basepage extends Helper {
         logger.info("Navigation to URL: {} completed", TestSettings.BASE_URL);
     }
 
-    public void openSite(String url){
+    public void openSite(String url) {
         logger.info("Navigating to URL: {}", url);
         this.driver.get(url);
         logger.info("Navigation to URL: {} completed", url);
     }
 
-    public WebElement findElement(By selector){
+    public WebElement findElement(By selector) {
         return getWait(TestSettings.WAIT_ELEMENT).until(ExpectedConditions.visibilityOfElementLocated(selector));
     }
 
@@ -59,7 +57,6 @@ public class Basepage extends Helper {
         return getWait(TestSettings.WAIT_ELEMENT)
                 .until(ExpectedConditions.presenceOfElementLocated(selector));
     }
-
 
     public WebDriverWait getWait(long waitTime) {
         return new WebDriverWait(this.driver, Duration.ofSeconds(waitTime));
@@ -111,8 +108,7 @@ public class Basepage extends Helper {
         });
     }
 
-
-    protected void enterText(By selector, String text){
+    protected void enterText(By selector, String text) {
         logger.info("Entering text {}", text);
         findElement(selector).sendKeys(text);
     }
@@ -136,7 +132,7 @@ public class Basepage extends Helper {
         return rawText.substring(rawText.indexOf(":") + 1).trim();
     }
 
-    protected void enterTextWithoutWait(By selector, String text){
+    protected void enterTextWithoutWait(By selector, String text) {
         logger.info("Entering text: {}", text);
         this.driver.findElement(selector).sendKeys(text);
     }
@@ -146,19 +142,19 @@ public class Basepage extends Helper {
         return findElement(selector).getDomAttribute(attributeName);
     }
 
-    protected String getElementValue(By selector){
+    protected String getElementValue(By selector) {
         logger.info("Getting value from element {}", selector);
         WebElement element = findElement(selector);
         return element.getText().isEmpty() ? element.getDomProperty("value") : element.getText();
     }
 
-    protected String getElementText(By selector){
+    protected String getElementText(By selector) {
         String text = findElement(selector).getText();
         logger.info("Retrieved text '{}' from element {}", text, selector);
         return text;
     }
 
-    protected void clickButton(By selector){
+    protected void clickButton(By selector) {
         logger.info("Clicking button {}", selector);
         waitForElementClickable(selector).click();
     }
@@ -167,38 +163,6 @@ public class Basepage extends Helper {
         logger.info("Executing JavaScript: {}", script);
         JavascriptExecutor js = (JavascriptExecutor) this.driver;
         js.executeScript(script);
-    }
-
-    protected void verifyTrue(boolean condition, String message) {
-        logger.info("Verifying condition is true");
-        assertTrue(condition, message);
-    }
-
-    protected void verifyFalse(boolean condition, String message) {
-        logger.info("Verifying condition is false");
-        assertFalse(condition, message);
-    }
-
-    protected void verifyEquals(Object expected, Object actual, String message) {
-        logger.info("Verifying equality of expected and actual values");
-        assertEquals(expected, actual, message);
-    }
-
-    public void verifyTitle(String expectedTitle) {
-        logger.info("Verifying page title is: {}", expectedTitle);
-        String actualTitle = this.driver.getTitle();
-        verifyEquals(expectedTitle, actualTitle, String.format("Expected title '%s' but found '%s'", expectedTitle, actualTitle));
-    }
-
-    protected void verifyElementVisible(By selector, String errorMessage) {
-        logger.info("Verifying visibility of element {}", selector);
-        try {
-            getWait(TestSettings.WAIT_ELEMENT).until(ExpectedConditions.visibilityOfElementLocated(selector));
-            logger.info("Element {} is visible", selector);
-        } catch (Exception e) {
-            logger.error("Element {} is not visible: {}", selector, errorMessage);
-            throw new AssertionError(errorMessage);
-        }
     }
 
     protected void hoverElement(By selector) {
@@ -227,6 +191,7 @@ public class Basepage extends Helper {
         logger.info("Accepting alert");
         alert.accept();
     }
+
     protected void dismissAlertAction(Alert alert) {
         logger.info("Dismissing alert");
         alert.dismiss();
@@ -237,7 +202,7 @@ public class Basepage extends Helper {
         return this.driver.switchTo().alert();
     }
 
-    protected WebDriver swithToNewWindow(){
+    protected WebDriver swithToNewWindow() {
         logger.info("Switching to new window");
         this.crrWindow = this.driver.getWindowHandle();
         logger.info("Current window: {}", this.crrWindow);
@@ -266,15 +231,17 @@ public class Basepage extends Helper {
     }
 
     /**
-     * Waits for an element's attribute to contain a specific value.
-     * Essential for verifying state changes like "expanded" or "checked" in dynamic components.
+     * Waits for a WebElement's attribute to contain a specific value.
+     * Essential for verifying state changes like "expanded" or "checked" in dynamic
+     * components.
      */
     protected void waitForAttributeContains(By selector, String attribute, String value) {
         logger.info("Waiting for element {} to have attribute '{}' containing '{}'", selector, attribute, value);
         try {
             getWait(TestSettings.WAIT_ELEMENT).until(ExpectedConditions.attributeContains(selector, attribute, value));
         } catch (Exception e) {
-            logger.error("Timeout waiting for attribute '{}' to contain '{}' on element {}", attribute, value, selector);
+            logger.error("Timeout waiting for attribute '{}' to contain '{}' on element {}", attribute, value,
+                    selector);
             throw e;
         }
     }
@@ -285,10 +252,10 @@ public class Basepage extends Helper {
      */
     protected void scrollToElement(By selector) {
         logger.info("Scrolling to element {}", selector);
-    
+
         WebElement element = new WebDriverWait(driver, Duration.ofSeconds(10))
                 .until(ExpectedConditions.presenceOfElementLocated(selector));
-    
+
         ((JavascriptExecutor) driver)
                 .executeScript("arguments[0].scrollIntoView({block:'center'});", element);
     }
@@ -304,52 +271,24 @@ public class Basepage extends Helper {
 
     // ================= WEBELEMENT HELPER METHODS =================
 
-    /**
-     * Scrolls to a WebElement using JavaScript with default center alignment.
-     * Used when working with WebElement objects directly instead of By selectors.
-     * 
-     * @param element The WebElement to scroll to
-     */
     protected void scrollToWebElement(WebElement element) {
         scrollToWebElement(element, "center", "center");
     }
 
-    /**
-     * Scrolls to a WebElement using JavaScript with custom alignment options.
-     * 
-     * @param element The WebElement to scroll to
-     * @param blockVertical Vertical alignment: "start", "center", "end", or "nearest"
-     * @param inlineHorizontal Horizontal alignment: "start", "center", "end", or "nearest"
-     */
     protected void scrollToWebElement(WebElement element, String blockVertical, String inlineHorizontal) {
         logger.info("Scrolling to WebElement with block: '{}', inline: '{}'", blockVertical, inlineHorizontal);
-        String script = String.format("arguments[0].scrollIntoView({block:'%s', inline:'%s'});", 
+        String script = String.format("arguments[0].scrollIntoView({block:'%s', inline:'%s'});",
                 blockVertical, inlineHorizontal);
         ((JavascriptExecutor) driver).executeScript(script, element);
     }
 
-    /**
-     * Waits for a WebElement's attribute to contain a specific value.
-     * Uses default wait time from TestSettings.WAIT_ELEMENT.
-     * 
-     * @param element The WebElement to wait for
-     * @param attribute The attribute name to check
-     * @param value The value that should be contained in the attribute
-     */
     protected void waitForWebElementAttributeContains(WebElement element, String attribute, String value) {
         waitForWebElementAttributeContains(element, attribute, value, TestSettings.WAIT_ELEMENT);
     }
 
-    /**
-     * Waits for a WebElement's attribute to contain a specific value with custom timeout.
-     * 
-     * @param element The WebElement to wait for
-     * @param attribute The attribute name to check
-     * @param value The value that should be contained in the attribute
-     * @param timeoutSeconds Custom timeout in seconds
-     */
-    protected void waitForWebElementAttributeContains(WebElement element, String attribute, String value, long timeoutSeconds) {
-        logger.info("Waiting for WebElement to have attribute '{}' containing '{}' (timeout: {}s)", 
+    protected void waitForWebElementAttributeContains(WebElement element, String attribute, String value,
+            long timeoutSeconds) {
+        logger.info("Waiting for WebElement to have attribute '{}' containing '{}' (timeout: {}s)",
                 attribute, value, timeoutSeconds);
         try {
             new WebDriverWait(driver, Duration.ofSeconds(timeoutSeconds))
@@ -361,28 +300,13 @@ public class Basepage extends Helper {
         }
     }
 
-    /**
-     * Waits for a WebElement's attribute to not contain a specific value.
-     * Uses default wait time from TestSettings.WAIT_ELEMENT.
-     * 
-     * @param element The WebElement to wait for
-     * @param attribute The attribute name to check
-     * @param value The value that should not be contained in the attribute
-     */
     protected void waitForWebElementAttributeNotContains(WebElement element, String attribute, String value) {
         waitForWebElementAttributeNotContains(element, attribute, value, TestSettings.WAIT_ELEMENT);
     }
 
-    /**
-     * Waits for a WebElement's attribute to not contain a specific value with custom timeout.
-     * 
-     * @param element The WebElement to wait for
-     * @param attribute The attribute name to check
-     * @param value The value that should not be contained in the attribute
-     * @param timeoutSeconds Custom timeout in seconds
-     */
-    protected void waitForWebElementAttributeNotContains(WebElement element, String attribute, String value, long timeoutSeconds) {
-        logger.info("Waiting for WebElement to not have attribute '{}' containing '{}' (timeout: {}s)", 
+    protected void waitForWebElementAttributeNotContains(WebElement element, String attribute, String value,
+            long timeoutSeconds) {
+        logger.info("Waiting for WebElement to not have attribute '{}' containing '{}' (timeout: {}s)",
                 attribute, value, timeoutSeconds);
         try {
             new WebDriverWait(driver, Duration.ofSeconds(timeoutSeconds))
@@ -394,24 +318,10 @@ public class Basepage extends Helper {
         }
     }
 
-    /**
-     * Waits for a WebElement to be visible.
-     * Uses default wait time from TestSettings.WAIT_ELEMENT.
-     * 
-     * @param element The WebElement to wait for
-     * @return The visible WebElement
-     */
     protected WebElement waitForWebElementVisible(WebElement element) {
         return waitForWebElementVisible(element, TestSettings.WAIT_ELEMENT);
     }
 
-    /**
-     * Waits for a WebElement to be visible with custom timeout.
-     * 
-     * @param element The WebElement to wait for
-     * @param timeoutSeconds Custom timeout in seconds
-     * @return The visible WebElement
-     */
     protected WebElement waitForWebElementVisible(WebElement element, long timeoutSeconds) {
         logger.info("Waiting for WebElement to be visible (timeout: {}s)", timeoutSeconds);
         try {
@@ -425,24 +335,10 @@ public class Basepage extends Helper {
         }
     }
 
-    /**
-     * Waits for a WebElement to be clickable.
-     * Uses default wait time from TestSettings.WAIT_ELEMENT.
-     * 
-     * @param element The WebElement to wait for
-     * @return The clickable WebElement
-     */
     protected WebElement waitForWebElementClickable(WebElement element) {
         return waitForWebElementClickable(element, TestSettings.WAIT_ELEMENT);
     }
 
-    /**
-     * Waits for a WebElement to be clickable with custom timeout.
-     * 
-     * @param element The WebElement to wait for
-     * @param timeoutSeconds Custom timeout in seconds
-     * @return The clickable WebElement
-     */
     protected WebElement waitForWebElementClickable(WebElement element, long timeoutSeconds) {
         logger.info("Waiting for WebElement to be clickable (timeout: {}s)", timeoutSeconds);
         try {
@@ -456,22 +352,10 @@ public class Basepage extends Helper {
         }
     }
 
-    /**
-     * Waits for a WebElement to be invisible.
-     * Uses default wait time from TestSettings.WAIT_ELEMENT.
-     * 
-     * @param element The WebElement to wait for
-     */
     protected void waitForWebElementInvisible(WebElement element) {
         waitForWebElementInvisible(element, TestSettings.WAIT_ELEMENT);
     }
 
-    /**
-     * Waits for a WebElement to be invisible with custom timeout.
-     * 
-     * @param element The WebElement to wait for
-     * @param timeoutSeconds Custom timeout in seconds
-     */
     protected void waitForWebElementInvisible(WebElement element, long timeoutSeconds) {
         logger.info("Waiting for WebElement to be invisible (timeout: {}s)", timeoutSeconds);
         try {
@@ -484,13 +368,6 @@ public class Basepage extends Helper {
         }
     }
 
-    /**
-     * Gets a WebElement's attribute value using getDomAttribute (non-deprecated method).
-     * 
-     * @param element The WebElement to get attribute from
-     * @param attributeName The name of the attribute
-     * @return The attribute value, or null if not found
-     */
     protected String getWebElementAttribute(WebElement element, String attributeName) {
         logger.info("Getting attribute '{}' from WebElement", attributeName);
         String value = element.getDomAttribute(attributeName);
@@ -498,12 +375,6 @@ public class Basepage extends Helper {
         return value;
     }
 
-    /**
-     * Gets a WebElement's text content.
-     * 
-     * @param element The WebElement to get text from
-     * @return The text content of the element
-     */
     protected String getWebElementText(WebElement element) {
         logger.info("Getting text from WebElement");
         String text = element.getText();
@@ -511,12 +382,6 @@ public class Basepage extends Helper {
         return text;
     }
 
-    /**
-     * Clicks a WebElement after ensuring it's visible and clickable.
-     * Scrolls to element first if needed.
-     * 
-     * @param element The WebElement to click
-     */
     protected void clickWebElement(WebElement element) {
         logger.info("Clicking WebElement");
         scrollToWebElement(element);
@@ -525,13 +390,6 @@ public class Basepage extends Helper {
         logger.info("WebElement clicked successfully");
     }
 
-    /**
-     * Enters text into a WebElement after ensuring it's visible.
-     * Scrolls to element first if needed.
-     * 
-     * @param element The WebElement to enter text into
-     * @param text The text to enter
-     */
     protected void enterTextToWebElement(WebElement element, String text) {
         logger.info("Entering text '{}' into WebElement", text);
         scrollToWebElement(element);
