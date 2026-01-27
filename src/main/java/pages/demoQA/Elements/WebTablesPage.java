@@ -3,6 +3,7 @@ package pages.demoQA.Elements;
 import core.Basepage;
 import locators.demoQA.elements.WebTablesLocators;
 import models.WebTableRecord;
+import models.enums.SortDirection;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 
@@ -282,6 +283,39 @@ public class WebTablesPage extends Basepage {
             logger.error("Failed to parse current page: {}", val);
             return 0;
         }
+    }
+
+    // ================= SORT =================
+
+    public WebTablesPage clickColumnHeader(Column column) {
+        logger.info("Clicking header for column: {}", column);
+        WebElement headerCell = getHeaderCell(column);
+        clickWebElement(headerCell);
+        waitForTableReady();
+        return this;
+    }
+
+    public SortDirection getColumnSortDirection(Column column) {
+        WebElement headerCell = getHeaderCell(column);
+        String clazz = getWebElementAttribute(headerCell, "class");
+
+        if (clazz.contains("-sort-asc")) {
+            return SortDirection.ASC;
+        } else if (clazz.contains("-sort-desc")) {
+            return SortDirection.DESC;
+        }
+        return SortDirection.NONE;
+    }
+
+    private WebElement getHeaderCell(Column column) {
+        List<WebElement> headers = findElement(WebTablesLocators.HEADER_ROW)
+                .findElements(WebTablesLocators.HEADER_CELL);
+
+        if (column.index >= headers.size()) {
+            throw new IndexOutOfBoundsException(
+                    "Column index " + column.index + " exceeds header count " + headers.size());
+        }
+        return headers.get(column.index);
     }
 
     private int resolveRowIndexByEmail(String email) {

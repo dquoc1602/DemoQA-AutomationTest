@@ -5,12 +5,13 @@ import org.openqa.selenium.By;
 public final class WebTablesLocators {
 
     public static final By TABLE_ROOT = By.cssSelector(".ReactTable");
-    public static final By LOADING = By.cssSelector(".-loading");
+    public static final By LOADING = By.cssSelector(".ReactTable .-loading");
 
     public static final By ADD_BUTTON = By.id("addNewRecordButton");
     public static final By SEARCH_BOX = By.id("searchBox");
 
     public static final By HEADER_ROW = By.cssSelector(".rt-thead .rt-tr");
+    public static final By HEADER_CELL = By.cssSelector(".rt-th");
     public static final By HEADER_TEXT = By.cssSelector(".rt-resizable-header-content");
 
     public static final By ROW_GROUP = By.cssSelector(".rt-tbody .rt-tr-group");
