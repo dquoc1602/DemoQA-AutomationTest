@@ -2,7 +2,6 @@ package pages.demoQA.Elements;
 
 import core.Basepage;
 import locators.demoQA.elements.UploadDownloadLocators;
-import org.openqa.selenium.WebElement;
 
 import static util.Constants.DEMOQA_UPLOAD_DOWNLOAD_URL;
 

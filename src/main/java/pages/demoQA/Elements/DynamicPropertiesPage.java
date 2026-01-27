@@ -2,7 +2,6 @@ package pages.demoQA.Elements;
 
 import core.Basepage;
 import locators.demoQA.elements.DynamicPropertiesLocators;
-import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
 import static util.Constants.DEMOQA_DYNAMIC_PROPERTIES_URL;

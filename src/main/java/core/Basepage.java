@@ -179,6 +179,12 @@ public class Basepage extends Helper {
         js.executeScript(script);
     }
 
+    protected void executeJavaScript(String script, Object... args) {
+        logger.info("Executing JavaScript with {} arguments", args.length);
+        JavascriptExecutor js = (JavascriptExecutor) this.driver;
+        js.executeScript(script, args);
+    }
+
     protected void hoverElement(By selector) {
         logger.info("Hovering over element {}", selector);
         WebElement element = findElement(selector);
