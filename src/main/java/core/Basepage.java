@@ -250,6 +250,22 @@ public class Basepage extends Helper {
         this.driver.switchTo().window(this.crrWindow);
     }
 
+    protected void switchToDefaultContent() {
+        logger.info("Switching back to default content");
+        this.driver.switchTo().defaultContent();
+    }
+
+    protected void switchToFrame(By selector) {
+        logger.info("Switching to frame {}", selector);
+        WebElement frameElement = findElementPresent(selector);
+        this.driver.switchTo().frame(frameElement);
+    }
+
+    protected void switchToFrame(String idOrName) {
+        logger.info("Switching to frame by ID/Name: {}", idOrName);
+        this.driver.switchTo().frame(idOrName);
+    }
+
     /**
      * Waits for a WebElement's attribute to contain a specific value.
      * Essential for verifying state changes like "expanded" or "checked" in dynamic
