@@ -159,6 +159,20 @@ public class Basepage extends Helper {
         waitForElementClickable(selector).click();
     }
 
+    protected void doubleClickButton(By selector) {
+        logger.info("Double clicking button {}", selector);
+        WebElement element = findElement(selector);
+        Actions actions = new Actions(driver);
+        actions.doubleClick(element).perform();
+    }
+
+    protected void rightClickButton(By selector) {
+        logger.info("Right clicking button {}", selector);
+        WebElement element = findElement(selector);
+        Actions actions = new Actions(driver);
+        actions.contextClick(element).perform();
+    }
+
     protected void executeJavaScript(String script) {
         logger.info("Executing JavaScript: {}", script);
         JavascriptExecutor js = (JavascriptExecutor) this.driver;
