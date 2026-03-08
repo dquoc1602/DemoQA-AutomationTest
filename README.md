@@ -2,7 +2,7 @@
 
 [![Java](https://img.shields.io/badge/Java-17-orange.svg)](https://www.oracle.com/java/)
 [![Selenium](https://img.shields.io/badge/Selenium-4.27.0-green.svg)](https://www.selenium.dev/)
-[![JUnit](https://img.shields.io/badge/JUnit-5.10.1-blue.svg)](https://junit.org/junit5/)
+[![TestNG](https://img.shields.io/badge/TestNG-7.8.0-blue.svg)](https://testng.org/)
 [![Maven](https://img.shields.io/badge/Maven-3.8+-red.svg)](https://maven.apache.org/)
 
 A comprehensive, enterprise-grade Selenium WebDriver automation framework built with Java, following international coding standards, Page Object Model (POM) pattern, and Object-Oriented Programming (OOP) principles.
@@ -83,17 +83,17 @@ DemoQAWed/
 │   │   ├── java/
 │   │   │   ├── core/                    # Core framework classes
 │   │   │   │   ├── BaseTest.java        # Base test class with setup/teardown
-│   │   │   │   ├── Basepage.java        # Base page class with common methods
+│   │   │   │   ├── BasePage.java        # Base page class with common methods
 │   │   │   │   ├── DriverManager.java   # WebDriver lifecycle management
 │   │   │   │   ├── TestSettings.java    # Configuration management
 │   │   │   │   └── AutoScrollListener.java
-│   │   │   ├── models/                  # Data model classes (POJOs)
+│   │   │   ├── model/                  # Data model classes (POJOs)
 │   │   │   │   └── TextboxFormData.java # Form data model with Builder pattern
-│   │   │   ├── pages/                   # Page Object Model classes
-│   │   │   │   └── demoQA/
-│   │   │   │       └── Elements/
+│   │   │   ├── page/                   # Page Object Model classes
+│   │   │   │   └── demoqa/
+│   │   │   │       └── elements/
 │   │   │   │           └── TextboxPage.java
-│   │   │   ├── util/                    # Utility classes
+│   │   │   ├── common/                    # Utility classes
 │   │   │   │   ├── Helper.java          # Helper methods
 │   │   │   │   └── Constants.java       # Project constants
 │   │   │   ├── enums/                   # Enumeration classes
@@ -106,7 +106,7 @@ DemoQAWed/
 │       ├── java/
 │       │   ├── data/                    # Test data factories
 │       │   │   └── TestDataFactory.java # Factory for creating test data
-│       │   └── Elements/                # Test classes
+│       │   └── elements/                # Test classes
 │       │       └── TextboxTest.java    # Test implementation
 │       └── resources/
 │           └── junit-platform.properties
@@ -178,7 +178,7 @@ This project adheres to international coding standards and best practices.
 - **Methods**: camelCase (e.g., `enterFullName()`, `verifyOutputEmail()`)
 - **Variables**: camelCase (e.g., `testData`, `textboxPage`)
 - **Constants**: UPPER_SNAKE_CASE (e.g., `BASE_URL`, `WAIT_ELEMENT`)
-- **Packages**: lowercase (e.g., `pages.demoQA.elements`)
+- **Packages**: lowercase (e.g., `page.demoqa.elements`)
 
 #### Code Formatting
 
@@ -190,7 +190,7 @@ This project adheres to international coding standards and best practices.
 #### Example:
 
 ```java
-public class TextboxPage extends Basepage {
+public class TextboxPage extends BasePage {
     
     private static final class Selectors {
         static final By FULL_NAME_INPUT = By.id("userName");
@@ -216,7 +216,7 @@ All public classes and methods must include JavaDoc comments:
  * 
  * @author Automation Team
  */
-public class TextboxPage extends Basepage {
+public class TextboxPage extends BasePage {
     
     /**
      * Enters the full name into the full name input field.
@@ -246,7 +246,7 @@ The framework follows the Page Object Model pattern, where each web page is repr
 #### Page Object Structure
 
 ```java
-public class TextboxPage extends Basepage {
+public class TextboxPage extends BasePage {
     
     // 1. Private static inner class for selectors (Encapsulation)
     private static final class Selectors {
@@ -282,10 +282,10 @@ public class TextboxPage extends Basepage {
 
 #### POM Best Practices
 
-1. **Encapsulation**: All locators must be in a private static inner class
+1. **Encapsulation**: All locator must be in a private static inner class
 2. **Fluent Interface**: Action methods return `this` for method chaining
 3. **Single Responsibility**: Each page object represents one page
-4. **Reusability**: Common methods in `Basepage` class
+4. **Reusability**: Common methods in `BasePage` class
 5. **No Assertions in Page Objects**: Assertions belong in test classes
 
 ### Object-Oriented Programming Principles
@@ -298,11 +298,11 @@ public class TextboxPage extends Basepage {
 
 2. **Open/Closed Principle (OCP)**
    - Open for extension, closed for modification
-   - Example: Extend `Basepage` instead of modifying it
+   - Example: Extend `BasePage` instead of modifying it
 
 3. **Liskov Substitution Principle (LSP)**
    - Subtypes must be substitutable for their base types
-   - Example: All page classes extend `Basepage` and can be used interchangeably
+   - Example: All page classes extend `BasePage` and can be used interchangeably
 
 4. **Interface Segregation Principle (ISP)**
    - Clients should not depend on methods they don't use
@@ -354,7 +354,7 @@ public class TextboxTest extends BaseTest {
     private TextboxPage textboxPage;
     private TextboxFormData testData;
     
-    @BeforeEach
+    @BeforeMethod
     public void setUpPages() {
         textboxPage = new TextboxPage();
         testData = TestDataFactory.createValidTextboxData();
@@ -505,7 +505,7 @@ Logging is configured in `src/main/resources/log4j2.xml`. Logs are written to:
 
 ### Page Object Model
 
-1. ✅ **DO**: Keep locators in a private static inner class
+1. ✅ **DO**: Keep locator in a private static inner class
 2. ✅ **DO**: Use ID-based selectors when possible (more stable)
 3. ✅ **DO**: Implement fluent interface for method chaining
 4. ✅ **DO**: Separate action methods from verification methods
@@ -563,7 +563,7 @@ Logging is configured in `src/main/resources/log4j2.xml`. Logs are written to:
 Enable debug logging by modifying `log4j2.xml`:
 
 ```xml
-<Logger name="pages" level="DEBUG"/>
+<Logger name="page" level="DEBUG"/>
 ```
 
 ## 🤝 Contributing
@@ -626,7 +626,7 @@ For questions, issues, or contributions, please:
 ## 🙏 Acknowledgments
 
 - Selenium WebDriver team
-- JUnit 5 team
+- TestNG 5 team
 - Apache Maven team
 - All contributors to this project
 

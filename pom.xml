@@ -16,11 +16,11 @@
         <version.dotenv>3.2.0</version.dotenv>
         <version.json>20240303</version.json>
         <version.selenium>4.27.0</version.selenium>
-        <version.junit>5.10.1</version.junit>
+        <version.testng>7.10.2</version.testng>
         <version.surefire>3.5.4</version.surefire>
         <version.log4j>2.24.3</version.log4j>
         <version.commons-csv>1.10.0</version.commons-csv>
-        <junit.platform.version>1.10.1</junit.platform.version>
+        <version.jackson>2.17.0</version.jackson>
 
     </properties>
 
@@ -45,32 +45,11 @@
             <version>${version.selenium}</version>
         </dependency>
 
-        <!-- https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-api -->
+        <!-- https://mvnrepository.com/artifact/org.testng/testng -->
         <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-api</artifactId>
-            <version>${version.junit}</version>
-            <scope>compile</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-engine</artifactId>
-            <version>${version.junit}</version>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.junit.platform</groupId>
-            <artifactId>junit-platform-launcher</artifactId>
-            <version>${junit.platform.version}</version>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.junit.platform</groupId>
-            <artifactId>junit-platform-commons</artifactId>
-            <version>${junit.platform.version}</version>
+            <groupId>org.testng</groupId>
+            <artifactId>testng</artifactId>
+            <version>${version.testng}</version>
             <scope>test</scope>
         </dependency>
 
@@ -99,6 +78,12 @@
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-csv</artifactId>
             <version>${version.commons-csv}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.fasterxml.jackson.dataformat</groupId>
+            <artifactId>jackson-dataformat-xml</artifactId>
+            <version>${version.jackson}</version>
         </dependency>
 
     </dependencies>

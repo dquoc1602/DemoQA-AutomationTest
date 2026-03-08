@@ -1,5 +1,6 @@
 package core;
 
+import core.listener.AutoScrollListener;
 import org.openqa.selenium.Platform;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -11,7 +12,7 @@ import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.events.EventFiringDecorator;
-import util.Helper;
+import common.Helper;
 
 import java.net.MalformedURLException;
 import java.net.URL;
