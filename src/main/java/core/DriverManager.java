@@ -109,14 +109,20 @@ public class DriverManager extends Helper {
     private WebDriver createChromeDriver() throws MalformedURLException {
         if(!isRemote) {
             ChromeOptions options = new ChromeOptions();
-            options.addArguments("--start-maximized");
-            options.addArguments(String.format("--window-size=%s", TestSettings.SCREEN_RESOLUTION));
             options.addArguments("--disable-notifications");
             options.addArguments("--disable-popup-blocking");
 
             if (TestSettings.HEADLESS) {
                 options.addArguments("--headless=new");
+                options.addArguments(String.format("--window-size=%s", TestSettings.SCREEN_RESOLUTION));
+                options.addArguments("--disable-gpu");
+                options.addArguments("--no-sandbox");
+                options.addArguments("--disable-dev-shm-usage");
+                options.addArguments("--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36");
                 logger.debug("Chrome browser initialized in headless mode");
+            } else {
+                options.addArguments("--start-maximized");
+                options.addArguments(String.format("--window-size=%s", TestSettings.SCREEN_RESOLUTION));
             }
 
             logger.debug("Chrome browser initialized with options: {}", options.asMap());

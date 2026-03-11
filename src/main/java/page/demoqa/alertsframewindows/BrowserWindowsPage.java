@@ -35,9 +35,13 @@ public class BrowserWindowsPage extends BasePage {
         // findElement(body) might fail.
         logger.info("Retrieving content from message window via page source...");
 
-        return getWait(10).until(d -> {
-            String source = d.getPageSource();
-            return (source != null && source.length() > 20) ? source : null;
+        return getWait(30).until(d -> {
+            try {
+                String source = d.getPageSource();
+                return (source != null && source.length() > 30) ? source : null;
+            } catch (Exception e) {
+                return null;
+            }
         });
     }
 

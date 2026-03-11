@@ -56,10 +56,9 @@ public class AccordianPage extends BasePage {
 
     private boolean isSectionExpanded(By locator) {
         try {
-            // Using presence instead of visibility because collapsed elements might be in
-            // DOM but have height 0 or hidden
             WebElement element = driver.findElement(locator);
-            return element.isDisplayed();
+            String classes = element.getDomAttribute("class");
+            return classes != null && classes.contains("show");
         } catch (Exception e) {
             return false;
         }

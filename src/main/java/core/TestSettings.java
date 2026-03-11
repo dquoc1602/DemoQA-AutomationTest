@@ -38,13 +38,13 @@ public class TestSettings {
 
     // WAIT SETTINGS
     /** Element visibility wait timeout in seconds */
-    public static final int WAIT_ELEMENT = 5;
+    public static final int WAIT_ELEMENT = 15;
 
     /** Implicit wait timeout in seconds */
     public static final int IMPLICIT_WAIT = 2;
 
     /** Page load timeout in seconds */
-    public static final int PAGE_LOAD_TIMEOUT = 15;
+    public static final int PAGE_LOAD_TIMEOUT = 30;
 
     // HUB SETTINGS
     /** Hub type (NONE, GRID) - Usage: mvn clean test -DhubType=GRID */

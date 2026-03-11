@@ -36,8 +36,19 @@ public class ElementFinder extends Helper {
      * @return the visible WebElement
      */
     public WebElement findElement(By selector) {
-        return new WebDriverWait(driver, Duration.ofSeconds(TestSettings.WAIT_ELEMENT))
-                .until(ExpectedConditions.visibilityOfElementLocated(selector));
+        try {
+            return new WebDriverWait(driver, Duration.ofSeconds(TestSettings.WAIT_ELEMENT))
+                    .until(ExpectedConditions.visibilityOfElementLocated(selector));
+        } catch (org.openqa.selenium.TimeoutException e) {
+            try {
+                java.io.File srcFile = ((org.openqa.selenium.TakesScreenshot) driver).getScreenshotAs(org.openqa.selenium.OutputType.FILE);
+                java.nio.file.Files.copy(srcFile.toPath(), new java.io.File("target/error_screenshot.png").toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+                logger.error("Timeout waiting for element. Screenshot saved to target/error_screenshot.png", selector);
+            } catch (Exception ex) {
+                logger.error("Failed to take screenshot on timeout", ex);
+            }
+            throw e;
+        }
     }
 
     /**

@@ -170,14 +170,16 @@ public class ElementInteraction extends WaitHelper {
 
     protected void doubleClickButton(By selector) {
         logger.info("Double clicking button {}", selector);
-        WebElement element = findElement(selector);
-        new Actions(driver).doubleClick(element).perform();
+        WebElement element = waitForElementClickable(selector);
+        ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView({block:'center'});", element);
+        new Actions(driver).moveToElement(element).doubleClick(element).perform();
     }
 
     protected void rightClickButton(By selector) {
         logger.info("Right clicking button {}", selector);
-        WebElement element = findElement(selector);
-        new Actions(driver).contextClick(element).perform();
+        WebElement element = waitForElementClickable(selector);
+        ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView({block:'center'});", element);
+        new Actions(driver).moveToElement(element).contextClick(element).perform();
     }
 
     /**

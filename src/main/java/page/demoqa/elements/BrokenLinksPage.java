@@ -20,7 +20,19 @@ public class BrokenLinksPage extends BasePage {
 
     public boolean isImageBroken(By locator) {
         WebElement img = findElement(locator);
-        // Using JavaScript to check naturalWidth
+        
+        // Wait for image to be 'complete' AND (for potential non-broken images) have naturalWidth > 0
+        // We only wait a short time because broken images will NEVER have naturalWidth > 0
+        try {
+            getWait(5).until(d -> {
+                Object complete = executeJavaScriptReturn("return arguments[0].complete;", img);
+                Object width = executeJavaScriptReturn("return arguments[0].naturalWidth;", img);
+                return (Boolean) complete && (width != null);
+            });
+        } catch (Exception e) {
+            logger.warn("Timeout waiting for image properties: {}", locator);
+        }
+
         Object naturalWidth = executeJavaScriptReturn("return arguments[0].naturalWidth;", img);
         boolean isBroken = naturalWidth == null || (long) naturalWidth == 0;
         logger.info("Image {} is broken: {}", locator, isBroken);
